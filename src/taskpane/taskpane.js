@@ -35,7 +35,7 @@ Office.onReady((info) => {
 	var connector;
 	var client = new buttplug.ButtplugClient('SHAKE');
 	
-	const deviceMap = new Map();
+	const features = [];
 	var linger = 30;
 	intensity = 0;
 	timeoutList = [];
@@ -48,7 +48,7 @@ Office.onReady((info) => {
 				e.remove();
 			}
 		});
-		deviceMap.clear();
+		features.length = 0;
 	}
 	
 	// Run these functions whenever the vibration intensity might need to change
@@ -58,20 +58,11 @@ Office.onReady((info) => {
 			return;
 		}
 		console.log("Vibing at "+intensity);
-		// Don't await, send as many commands as quickly as possible
-		for(dev of deviceMap.values()) {
-			amps = dev.amp.map((val, i) => dev.active[i] ? val*intensity : 0);
-			dev.device.vibrate(amps).catch(e => showError(e));
+		for(feat of features) {
+			if(feat.type == 'vibe' && feat.active) {
+				feat.feature.runOutput(buttplug.DeviceOutput.Vibrate.percent(feat.amp*intensity)).catch(e => showError(e));
+			}
 		}
-	}
-	async function updateVibe(idx) {
-		if(!client.connected) {
-			disconnectDOM();
-			return;
-		}
-		let dev = deviceMap.get(idx);
-		amps = dev.amp.map((val, i) => dev.active[i] ? val*intensity : 0);
-		dev.device.vibrate(amps).catch(e => showError(e));
 	}
 	
 	function stop() {
@@ -90,7 +81,8 @@ Office.onReady((info) => {
 			intensity = 1;
 		}
 		updateVibes();
-		timeoutList.add(setTimeout(() => {
+		timeoutList.push(setTimeout(() => {
+			console.log("Intensity: "+intensity+", Frac: "+frac);
 			intensity -= frac;
 			if(intensity < 0.000001) {
 				stop(); // For cleanup and rounding purposess
@@ -137,43 +129,37 @@ Office.onReady((info) => {
 	// E-Stop button
 	stopBtn.addEventListener('click', async() => {
 		// Don't await, send as many commands as quickly as possible
-		for(dev of deviceMap.values()) {
-			if(dev.active) {
-				dev.device.stop().catch(e => showError(e));
+		for(feat of features) {
+			if(feat.type == 'vibe' && feat.active) {
+				feat.feature.runOutput(buttplug.DeviceOutput.Vibrate.percent(0));
 			}
 		}
+		// Now run regular stop commands for cleanup
+		stop();
 	});
 	
 	// Linger slider
 	lingerInput.addEventListener('input', (e) => {
 		linger = e.target.value;
 		lingerValue.textContent = e.target.value;
-		updateVibes();
 	});
 	
 	client.addListener('deviceadded', (device) => {
 		console.log('Device added!');
 		console.log(device);
 		
-		let devIdx = device.index
-		
-		// Add to map
-		deviceMap.set(devIdx, {'device': device, 'amp': [], 'active': []});
-		
 		let ctrlsDiv = document.createElement('div');
-		ctrlsDiv.setAttribute('bpidx', devIdx);
+		ctrlsDiv.setAttribute('bpidx', device.index);
 		ctrlsDiv.classList.add('device-controls');
 		let ch2 = document.createElement('h2');
 		ch2.textContent = device.displayName || device.name;
 		ctrlsDiv.append(ch2);
 		
-		vibes = device.vibrateAttributes;
+		vibes = device.features.values().filter((f) => f.hasOutput(buttplug.OutputType.Vibrate));
+		idx = 0;
 		for(vibe of vibes) {
-			if(vibe.ActuatorType != buttplug.ActuatorType.Vibrate) {continue}
-			let idx = vibe.Index;
-			deviceMap.get(devIdx).amp[idx] = 0;
-			deviceMap.get(devIdx).active[idx] = true;
-			let stepCount = vibe.StepCount;
+			vibeObj = {'type': 'vibe', 'amp': 0, 'active': true, 'feature': vibe}
+			features.push(vibeObj);
 			let vibeDiv = document.createElement('div');
 			vibeDiv.classList.add('control-group');
 			
@@ -191,10 +177,10 @@ Office.onReady((info) => {
 			togStatus.textContent = 'Enabled';
 			togStatus.classList.add('toggle-label');
 			cb.addEventListener('change', async (e) => {
-				deviceMap.get(devIdx).active[idx] = e.target.checked;
+				vibeObj.active = e.target.checked;
 				if(!e.target.checked) {
 					try {
-						await deviceMap.get(devIdx).device.stop();
+						await vibe.runOutput(buttplug.DeviceOutput.Vibrate.percent(0));
 					} catch(e) {
 						showError(e);
 					}
@@ -208,28 +194,36 @@ Office.onReady((info) => {
 			let slideInp = document.createElement('input');
 			slideInp.setAttribute('type', 'range');
 			slideInp.setAttribute('min', 0);
-			slideInp.setAttribute('max', stepCount - 1);
+			slideInp.setAttribute('max', 100);
 			slideInp.setAttribute('step', 1);
 			slideInp.setAttribute('value', 0);
 			let slideVal = document.createElement('span');
 			slideVal.classList.add('slider-value');
 			slideVal.textContent = '0';
-			slideVal.setAttribute('title', 'Maximum intensity. Intensity will be scaled from 0 to this number out of the max.');
+			slideVal.setAttribute('title', 'Maximum intensity. Intensity will be scaled from 0 to this number out of 100.');
 			slideInp.addEventListener('input', (e) => {
-				deviceMap.get(devIdx).amp[idx] = e.target.value/(stepCount - 1);
-				updateVibe(devIdx);
+				vibeObj.amp = e.target.value/100;
+				if(vibeObj.active) {
+					vibe.runOutput(buttplug.DeviceOutput.Vibrate.percent(vibeObj.amp*intensity));
+				}
 				slideVal.textContent = e.target.value;
 			});
 			
 			vibeDiv.append(togDiv, slideInp, slideVal);
 			ctrlsDiv.append(vibeDiv);
+			
+			idx++;
 		}
 		
 		controlView.append(ctrlsDiv);
 	});
 	
 	client.addListener('deviceremoved', (device) => {
-		deviceMap.delete(device.index);
+		for(let i = features.length-1; i >= 0; i--) {
+			if(features[i].feature._deviceIndex = device.index) {
+				features.splice(i, 1);
+			}
+		}
 		for(ctrlsDiv of controlView.children) {
 			if(ctrlsDiv.getAttribute('bpidx') == device.index) {
 				ctrlsDiv.remove();
@@ -242,20 +236,19 @@ Office.onReady((info) => {
 		Word.run(async (context) => {
 			context.document.onParagraphChanged.add(async (e) => {
 				addIntensity(1/linger, linger)
-				setTimeout(() => {intensity--; updateVibes()}, linger * 1000);
 			});
 			await context.sync();
 		});
 	}
 	
 	if(info.host === Office.HostType.Excel) {
+		//OfficeRuntime.storage.setItem("deviceMap", deviceMap);
 		Excel.run(async (context) => {
 			let sheets = context.workbook.worksheets;
 			sheets.load("items/name");
 			await context.sync();
 			sheets.onChanged.add(async (e) => {
 				addIntensity(1/linger, linger)
-					setTimeout(() => {intensity--; updateVibes()}, linger * 1000);
 			});
 		});
 	}

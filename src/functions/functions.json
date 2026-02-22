@@ -1,0 +1,27 @@
+{
+    "functions": [
+        {
+            "id": "VIBRATE",
+            "name": "VIBRATE",
+            "parameters": [
+                {
+                    "description": "Vibration intensity level, between 0 and 1.",
+                    "name": "intensity",
+                    "type": "number"
+                },
+                {
+                    "description": "Index of the device to be vibrated.",
+                    "name": "device",
+                    "type": "number",
+					"optional": true
+                },
+				{
+                    "description": "Index of the vibrator within the device to be vibrated.",
+                    "name": "vibrator",
+                    "type": "number",
+					"optional": true
+                }
+            ]
+        }
+	]
+}
