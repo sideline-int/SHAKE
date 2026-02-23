@@ -69,7 +69,7 @@
               <SourceLocation resid="Functions.Script.Url"/>
             </Script>
             <Page>
-              <SourceLocation resid="Functions.Page.Url"/>
+              <SourceLocation resid="Taskpane.Url"/>
             </Page>
             <Metadata>
               <SourceLocation resid="Functions.Metadata.Url"/>
@@ -127,9 +127,9 @@
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
 		<bt:Url id="Functions.Script.Url" DefaultValue="https://localhost:3000/functions.js"/>
         <bt:Url id="Functions.Metadata.Url" DefaultValue="https://localhost:3000/functions.json"/>
-        <bt:Url id="Functions.Page.Url" DefaultValue="https://localhost:3000/functions.html"/>
       </bt:Urls>
       <bt:ShortStrings>
+	    <bt:String id="Functions.Namespace" DefaultValue="SHAKE"/>
         <bt:String id="GetStarted.Title" DefaultValue="Welcome to SHAKE!"/>
         <bt:String id="CommandsGroup.Label" DefaultValue="SHAKE"/>
         <bt:String id="TaskpaneButton.Label" DefaultValue="Show Panel"/>

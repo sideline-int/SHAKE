@@ -1,13 +1,15 @@
+/* global console */
+
 /**
+ * Vibrates at a given intensity. 
  * @customfunction
- * @description Vibrates at a given intensity. 
  * @param {number} intensity Vibration intensity level, between 0 and 1.
  * @param {number} [device] Index of the device to be vibrated.
  * @param {number} [vibrator] Index of the vibrator within the device to be vibrated.
  */
-function Vibrate(intensity, device, vibrator) {
-	//deviceMap = OfficeRuntime.storage.getItem("deviceMap");
-	deviceMap = undefined;
+export function vibrate(intensity, device, vibrator) {
+	deviceMap = OfficeRuntime.storage.getItem("deviceMap");
+	//deviceMap = undefined;
 	if(!(deviceMap instanceof Map)) {
 		throw new CustomFunctions.Error(CustomFunctions.ErrorCode.notAvailable, "Something went wrong with the SHAKE setup");
 	}
@@ -28,4 +30,4 @@ function Vibrate(intensity, device, vibrator) {
 	return;
 }
 
-CustomFunctions.associate("VIBRATE", Vibrate);
+//CustomFunctions.associate("VIBRATE", vibrate);

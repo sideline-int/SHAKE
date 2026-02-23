@@ -35,7 +35,7 @@ Office.onReady((info) => {
 	var connector;
 	var client = new buttplug.ButtplugClient('SHAKE');
 	
-	const features = [];
+	var features = [];
 	var linger = 30;
 	intensity = 0;
 	timeoutList = [];
@@ -59,8 +59,9 @@ Office.onReady((info) => {
 		}
 		console.log("Vibing at "+intensity);
 		for(feat of features) {
-			if(feat.type == 'vibe' && feat.active) {
-				feat.feature.runOutput(buttplug.DeviceOutput.Vibrate.percent(feat.amp*intensity)).catch(e => showError(e));
+			if(feat.type == 'vibe') {
+				featInt = feat.active ? feat.amp*intensity : 0;
+				feat.feature.runOutput(buttplug.DeviceOutput.Vibrate.percent(featInt)).catch(e => showError(e));
 			}
 		}
 	}
@@ -82,7 +83,6 @@ Office.onReady((info) => {
 		}
 		updateVibes();
 		timeoutList.push(setTimeout(() => {
-			console.log("Intensity: "+intensity+", Frac: "+frac);
 			intensity -= frac;
 			if(intensity < 0.000001) {
 				stop(); // For cleanup and rounding purposess
@@ -158,7 +158,7 @@ Office.onReady((info) => {
 		vibes = device.features.values().filter((f) => f.hasOutput(buttplug.OutputType.Vibrate));
 		idx = 0;
 		for(vibe of vibes) {
-			vibeObj = {'type': 'vibe', 'amp': 0, 'active': true, 'feature': vibe}
+			const vibeObj = {'type': 'vibe', 'amp': 0, 'active': true, 'feature': vibe}
 			features.push(vibeObj);
 			let vibeDiv = document.createElement('div');
 			vibeDiv.classList.add('control-group');
@@ -178,14 +178,8 @@ Office.onReady((info) => {
 			togStatus.classList.add('toggle-label');
 			cb.addEventListener('change', async (e) => {
 				vibeObj.active = e.target.checked;
-				if(!e.target.checked) {
-					try {
-						await vibe.runOutput(buttplug.DeviceOutput.Vibrate.percent(0));
-					} catch(e) {
-						showError(e);
-					}
-				}
 				togStatus.textContent = e.target.checked ? 'Enabled' : 'Disabled';
+				updateVibes();
 			});
 			togSwitch.append(cb, togSlider);
 			togDiv.append(togSwitch, togStatus);
@@ -207,6 +201,7 @@ Office.onReady((info) => {
 					vibe.runOutput(buttplug.DeviceOutput.Vibrate.percent(vibeObj.amp*intensity));
 				}
 				slideVal.textContent = e.target.value;
+				updateVibes();
 			});
 			
 			vibeDiv.append(togDiv, slideInp, slideVal);
