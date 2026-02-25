@@ -4,6 +4,8 @@ SHAKE is an Add-in for Microsoft Word and Excel to interface with [buttplug](htt
 
 You'll need to have [Intiface Central](https://intiface.com/central/) installed and running. In SHAKE, type in the port that Intiface Central's running on (typically 12345), and click Connect. You can then change the maximum intensity for each vibrator on each of your devices, as well as the "linger" (which will spread out the response to your typing over a longer time).
 
+https://github.com/user-attachments/assets/bedbf547-ffbf-4bee-9564-355dbe58fbc9
+
 ### Important limitations
 * Word and Excel are available on approximately too many platforms. I haven't tested on all of them, so some (looking at you iPad) might not work, even if you manage to load it. If you run into problems feel free to open an issue and I might look into it.
 * We can only detect your typing in Word (very roughly) about once per second, so you'll always have a second or so of latency. The Word APIs just weren't designed for live updates.
