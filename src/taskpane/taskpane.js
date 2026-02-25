@@ -1,3 +1,6 @@
+deviceMap = new Map();
+excelOverride = false;
+
 Office.onReady((info) => {
 	console.log(info.host);
 	
@@ -12,6 +15,8 @@ Office.onReady((info) => {
 	const disconnectBtn = document.getElementById('disconnect-btn');
 	const lingerInput = document.getElementById('linger-input');
 	const lingerValue = document.getElementById('linger-value');
+	const excelOverrideDiv = document.getElementById('excel-override-div');
+	const excelOverrideTog = document.getElementById('excel-override');
 	
 	// Error handling
 	function showError(err) {
@@ -55,6 +60,9 @@ Office.onReady((info) => {
 	async function updateVibes() {
 		if(!client.connected) {
 			disconnectDOM();
+			return;
+		}
+		if(excelOverride) {
 			return;
 		}
 		console.log("Vibing at "+intensity);
@@ -147,6 +155,7 @@ Office.onReady((info) => {
 	client.addListener('deviceadded', (device) => {
 		console.log('Device added!');
 		console.log(device);
+		deviceMap.set(device.index, device);
 		
 		let ctrlsDiv = document.createElement('div');
 		ctrlsDiv.setAttribute('bpidx', device.index);
@@ -197,9 +206,6 @@ Office.onReady((info) => {
 			slideVal.setAttribute('title', 'Maximum intensity. Intensity will be scaled from 0 to this number out of 100.');
 			slideInp.addEventListener('input', (e) => {
 				vibeObj.amp = e.target.value/100;
-				if(vibeObj.active) {
-					vibe.runOutput(buttplug.DeviceOutput.Vibrate.percent(vibeObj.amp*intensity));
-				}
 				slideVal.textContent = e.target.value;
 				updateVibes();
 			});
@@ -214,6 +220,7 @@ Office.onReady((info) => {
 	});
 	
 	client.addListener('deviceremoved', (device) => {
+		deviceMap.delete(device.index);
 		for(let i = features.length-1; i >= 0; i--) {
 			if(features[i].feature._deviceIndex = device.index) {
 				features.splice(i, 1);
@@ -237,7 +244,15 @@ Office.onReady((info) => {
 	}
 	
 	if(info.host === Office.HostType.Excel) {
-		//OfficeRuntime.storage.setItem("deviceMap", deviceMap);
+		excelOverrideDiv.style = "display:block";
+		excelOverrideTog.addEventListener('change', (e) => {
+			excelOverride = e.target.checked;
+			if(excelOverride) {
+				stop();
+			} else {
+				updateVibes();
+			}
+		});
 		Excel.run(async (context) => {
 			let sheets = context.workbook.worksheets;
 			sheets.load("items/name");

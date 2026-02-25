@@ -8,6 +8,7 @@
 
 	<script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 	<script type="text/javascript" src="buttplug.js"></script>
+	<script type="text/javascript" src="../functions/functions.js"></script>
 
 	<link href="taskpane.css" rel="stylesheet" type="text/css" />
 </head>
@@ -32,6 +33,15 @@
             <button id="stop-btn" title="Stop all device motors without disconnecting">Stop</button>
             <button id="disconnect-btn" title="Disconnect from Intiface Server">Disconnect</button>
         </div>
+		<div class="device-controls" id="excel-override-div" style="display:none">
+			<label for="excel-override"><h2 title="Use input from SHAKE.VIBRATE() instead of the linger system">Use Excel functions</h2></label>
+			<div class="toggle-div">
+				<label class="toggle-switch">
+					<input id="excel-override" type="checkbox">
+					<span class="toggle-slider"></span>
+				</label>
+			</div>
+		</div>
 		<div class="device-controls">
 			<label for="linger-input"><h2 title="How long each input should last for, in seconds. Increase for slower, more gradual buildup.">Linger</h2></label>
 			<input type="range" id="linger-input" min="5" max="300" step="1" value="30">

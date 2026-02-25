@@ -7,7 +7,7 @@
   },
   "license": "MIT",
   "config": {
-    "app_to_debug": "excel",
+    "app_to_debug": "word",
     "app_type_to_debug": "desktop",
     "dev_server_port": 3000
   },
