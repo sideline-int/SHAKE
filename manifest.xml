@@ -6,8 +6,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="SHAKE"/>
   <Description DefaultValue="Stimulating Haptics Add-in for Kinematic Enhancement"/>
-  <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
+  <IconUrl DefaultValue="https://sideline-int.github.io/SHAKE/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://sideline-int.github.io/SHAKE/assets/icon-64.png"/>
   <SupportUrl DefaultValue="https://github.com/sideline-int/SHAKE/issues"/>
   <Hosts>
     <Host Name="Document"/>
@@ -19,7 +19,7 @@
     </Sets>
   </Requirements>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://localhost:3000/taskpane.html"/>
+    <SourceLocation DefaultValue="https://sideline-int.github.io/SHAKE/taskpane.html"/>
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
@@ -120,16 +120,16 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+        <bt:Image id="Icon.16x16" DefaultValue="https://sideline-int.github.io/SHAKE/assets/icon-16.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://sideline-int.github.io/SHAKE/assets/icon-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://sideline-int.github.io/SHAKE/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com/sideline-int/SHAKE"/>
-        <bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html"/>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
-		<bt:Url id="Functions.Script.Url" DefaultValue="https://localhost:3000/functions.js"/>
-        <bt:Url id="Functions.Metadata.Url" DefaultValue="https://localhost:3000/functions.json"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://sideline-int.github.io/SHAKE/commands.html"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://sideline-int.github.io/SHAKE/taskpane.html"/>
+		<bt:Url id="Functions.Script.Url" DefaultValue="https://sideline-int.github.io/SHAKE/functions.js"/>
+        <bt:Url id="Functions.Metadata.Url" DefaultValue="https://sideline-int.github.io/SHAKE/functions.json"/>
       </bt:Urls>
       <bt:ShortStrings>
 	    <bt:String id="Functions.Namespace" DefaultValue="SHAKE"/>
